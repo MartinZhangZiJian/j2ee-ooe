@@ -12,7 +12,9 @@ import com.oned.taobao.utils.Key;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
+import com.taobao.api.request.TbkDgItemCouponGetRequest;
 import com.taobao.api.request.TbkItemGetRequest;
+import com.taobao.api.response.TbkDgItemCouponGetResponse;
 import com.taobao.api.response.TbkItemGetResponse;
 
 /*
@@ -44,7 +46,7 @@ public class TaoBaoKeController {
 	 * @param page_size			页大小，默认20，1~100
 	 * @return
 	 */
-	@RequestMapping(value = Url.product + "/" + Url.search, method = RequestMethod.GET)
+	@RequestMapping(value = Url.product_search, method = RequestMethod.GET)
 	public ModelAndView TaoBaoKeGoodsSearch(@RequestParam(required = true)String q, 
 			@RequestParam(required = false)String cat, @RequestParam(required = false)String itemloc, 
 			@RequestParam(required = false)String sort, @RequestParam(required = false)Long start_price, 
@@ -67,6 +69,40 @@ public class TaoBaoKeController {
 		req.setPageNo(page_no);
 		req.setPageSize(page_size);
 		TbkItemGetResponse rsp;
+		try {
+			rsp = client.execute(req);
+			return DataOutput.DataReturn(rsp.getBody());
+		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return DataOutput.DataReturn(e.toString());
+		}
+	}
+	
+	/**
+	 * 好券清单API【导购】
+	 * http://open.taobao.com/docs/api.htm?spm=a219a.7395905.0.0.tD7sbS&scopeId=11655&apiId=29821
+	 * 
+	 * @param adzone_id		mm_xxx_xxx_xxx的第三位
+	 * @param platform		1：PC，2：无线，默认：1
+	 * @param cat			后台类目ID，用,分割，最大10个，该ID可以通过taobao.itemcats.get接口获取到
+	 * @param page_size		页大小，默认20，1~100
+	 * @param q				查询词
+	 * @param page_no		第几页，默认：1（当后台类目和查询词均不指定的时候，最多出10000个结果，即page_no*page_size不能超过200；当指定类目或关键词的时候，则最多出100个结果）
+	 */
+	@RequestMapping(value = Url.coupon_guide, method = RequestMethod.GET)
+	public ModelAndView TaoBaoTBKDgItemCouponGet(@RequestParam(required = false)String cat, 
+			@RequestParam(required = false)String q, @RequestParam(required = false)Long page_no) {
+		
+		TaobaoClient client = new DefaultTaobaoClient(Url.taobaoke_url, Key.getAppKey(), Key.getAppSecret());
+		TbkDgItemCouponGetRequest req = new TbkDgItemCouponGetRequest();
+		req.setAdzoneId(Key.getAdzoneId());
+		req.setPlatform(platform);
+		req.setCat(cat);
+		req.setPageSize(page_size);
+		req.setQ(q);
+		req.setPageNo(page_no);
+		TbkDgItemCouponGetResponse rsp;
 		try {
 			rsp = client.execute(req);
 			return DataOutput.DataReturn(rsp.getBody());
