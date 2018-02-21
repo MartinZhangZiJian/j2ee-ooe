@@ -12,10 +12,15 @@ import com.oned.taobao.utils.Key;
 import com.taobao.api.ApiException;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
+import com.taobao.api.internal.util.StringUtils;
 import com.taobao.api.request.TbkDgItemCouponGetRequest;
 import com.taobao.api.request.TbkItemGetRequest;
+import com.taobao.api.request.TbkItemRecommendGetRequest;
+import com.taobao.api.request.TbkJuTqgGetRequest;
 import com.taobao.api.response.TbkDgItemCouponGetResponse;
 import com.taobao.api.response.TbkItemGetResponse;
+import com.taobao.api.response.TbkItemRecommendGetResponse;
+import com.taobao.api.response.TbkJuTqgGetResponse;
 
 /*
  * 淘宝客专用接口
@@ -113,4 +118,51 @@ public class TaoBaoKeController {
 		}
 	}
 	
+	/**
+	 * 淘宝客商品关联推荐查询
+	 */
+	@RequestMapping(value = Url.product_recommend, method = RequestMethod.GET)
+	public ModelAndView TaoBaoKeRecommend(@RequestParam(required = true)Long num_iid) {
+		TaobaoClient client = new DefaultTaobaoClient(Url.taobaoke_url, Key.getAppKey(), Key.getAppSecret());
+		TbkItemRecommendGetRequest req = new TbkItemRecommendGetRequest();
+		req.setFields("num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url");
+		req.setNumIid(num_iid);
+		req.setCount(page_size);
+		req.setPlatform(platform);
+		try {
+			TbkItemRecommendGetResponse rsp = client.execute(req);
+			rsp = client.execute(req);
+			return DataOutput.DataReturn(rsp.getBody());
+		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return DataOutput.DataReturn(e.toString());
+		}
+	}
+	
+	/**
+	 * 淘抢购api
+	 * # 获取淘抢购的数据，淘客商品转淘客链接，非淘客商品输出普通链接 #
+	 */
+	@RequestMapping(value = Url.tqg, method = RequestMethod.GET)
+	public ModelAndView TaoBaoKeTQG(@RequestParam(required = true)String start_time, @RequestParam(required = true)String end_time,
+			@RequestParam(required = true)Long page) {
+		TaobaoClient client = new DefaultTaobaoClient(Url.taobaoke_url, Key.getAppKey(), Key.getAppSecret());
+		TbkJuTqgGetRequest req = new TbkJuTqgGetRequest();
+		req.setAdzoneId(Key.getAdzoneId());
+		req.setFields("click_url,pic_url,reserve_price,zk_final_price,total_amount,sold_num,title,category_name,start_time,end_time");
+		req.setStartTime(StringUtils.parseDateTime(start_time));
+		req.setEndTime(StringUtils.parseDateTime(end_time));
+		req.setPageNo(page);
+		req.setPageSize(page_size);
+		try {
+			TbkJuTqgGetResponse rsp = client.execute(req);
+			rsp = client.execute(req);
+			return DataOutput.DataReturn(rsp.getBody());
+		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return DataOutput.DataReturn(e.toString());
+		}
+	}
 }

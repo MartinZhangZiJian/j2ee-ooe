@@ -27,4 +27,15 @@ public interface Url {
 	 * http://open.taobao.com/docs/api.htm?spm=a219a.7395905.0.0.tD7sbS&scopeId=11655&apiId=29821
 	 */
 	String coupon_guide = "coupon/guide";
+	
+	/**
+	 * 淘宝客商品关联推荐查询
+	 */
+	String product_recommend = "product/recommend";
+	
+	/**
+	 * 淘抢购api
+	 * # 获取淘抢购的数据，淘客商品转淘客链接，非淘客商品输出普通链接 #
+	 */
+	String tqg = "tqg";
 }
