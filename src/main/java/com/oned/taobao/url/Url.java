@@ -38,4 +38,9 @@ public interface Url {
 	 * # 获取淘抢购的数据，淘客商品转淘客链接，非淘客商品输出普通链接 #
 	 */
 	String tqg = "tqg";
+	
+	/**
+	 * 淘宝客店铺查询
+	 */
+	String shop_get = "shop/get";
 }

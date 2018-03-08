@@ -17,10 +17,12 @@ import com.taobao.api.request.TbkDgItemCouponGetRequest;
 import com.taobao.api.request.TbkItemGetRequest;
 import com.taobao.api.request.TbkItemRecommendGetRequest;
 import com.taobao.api.request.TbkJuTqgGetRequest;
+import com.taobao.api.request.TbkShopGetRequest;
 import com.taobao.api.response.TbkDgItemCouponGetResponse;
 import com.taobao.api.response.TbkItemGetResponse;
 import com.taobao.api.response.TbkItemRecommendGetResponse;
 import com.taobao.api.response.TbkJuTqgGetResponse;
+import com.taobao.api.response.TbkShopGetResponse;
 
 /*
  * 淘宝客专用接口
@@ -120,6 +122,10 @@ public class TaoBaoKeController {
 	
 	/**
 	 * 淘宝客商品关联推荐查询
+	 * 
+	 * @param num_iid 	Number 	必须 	商品Id
+	 * @param count 		Number 	可选 	返回数量，默认20，最大值40
+	 * @param platform 	Number 	可选 	链接形式：1：PC，2：无线，默认：１
 	 */
 	@RequestMapping(value = Url.product_recommend, method = RequestMethod.GET)
 	public ModelAndView TaoBaoKeRecommend(@RequestParam(required = true)Long num_iid) {
@@ -143,6 +149,12 @@ public class TaoBaoKeController {
 	/**
 	 * 淘抢购api
 	 * # 获取淘抢购的数据，淘客商品转淘客链接，非淘客商品输出普通链接 #
+	 * 
+	 * @param adzone_id 		Number 	必须 	推广位id（推广位申请方式：http://club.alimama.com/read.php?spm=0.0.0.0.npQdST&tid=6306396&ds=1&page=1&toread=1）
+	 * @param start_time 	Date 	必须 	最早开团时间
+	 * @param end_time 		Date 	必须 	最晚开团时间
+	 * @param page_no 		Number 	可选 	第几页，默认1，1~100
+	 * @param page_size 		Number 	可选 	页大小，默认40，1~40
 	 */
 	@RequestMapping(value = Url.tqg, method = RequestMethod.GET)
 	public ModelAndView TaoBaoKeTQG(@RequestParam(required = true)String start_time, @RequestParam(required = true)String end_time,
@@ -160,6 +172,59 @@ public class TaoBaoKeController {
 			rsp = client.execute(req);
 			return DataOutput.DataReturn(rsp.getBody());
 		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return DataOutput.DataReturn(e.toString());
+		}
+	}
+	
+	/**
+	 * 淘宝客店铺查询
+	 * 
+	 * @param q 							String 	必须 	查询词
+	 * @param sort 						String 	可选  	排序_des（降序），排序_asc（升序），佣金比率（commission_rate）， 商品数量（auction_count），销售总数量（total_auction）
+	 * @param is_tmall 					Boolean 可选 	是否商城的店铺，设置为true表示该是属于淘宝商城的店铺，设置为false或不设置表示不判断这个属性
+	 * @param start_credit 				Number 	可选 	信用等级下限，1~20
+	 * @param end_credit 				Number 	可选 	信用等级上限，1~20
+	 * @param start_commission_rate 		Number 	可选 	淘客佣金比率下限，1~10000
+	 * @param end_commission_rate	 	Number 	可选 	淘客佣金比率上限，1~10000
+	 * @param start_total_action 		Number 	可选 	店铺商品总数下限
+	 * @param end_total_action 			Number 	可选 	店铺商品总数上限
+	 * @param start_auction_count 		Number 	可选 	累计推广商品下限
+	 * @param end_auction_count 			Number 	可选 	累计推广商品上限
+	 * @param platform 					Number 	可选 	链接形式：1：PC，2：无线，默认：１
+	 * @param page_no 					Number 	可选 	第几页，默认1，1~100
+	 * @param page_size 					Number 	可选 	页大小，默认20，1~100
+	 */
+	@RequestMapping(value = Url.shop_get, method = RequestMethod.GET)
+	public ModelAndView TaoBaoKeShopGet(@RequestParam(required = true)String q, @RequestParam(required = false)String sort,
+			@RequestParam(required = false)Long start_credit, @RequestParam(required = false)Long end_credit,
+			@RequestParam(required = false)Long start_commission_rate, @RequestParam(required = false)Long end_commission_rate,
+			@RequestParam(required = false)Long start_total_action, @RequestParam(required = false)Long end_total_action,
+			@RequestParam(required = false)Long start_auction_count, @RequestParam(required = false)Long end_auction_count,
+			@RequestParam(required = false)Long page_no) {
+		TaobaoClient client = new DefaultTaobaoClient(Url.taobaoke_url, Key.getAppKey(), Key.getAppSecret());
+		TbkShopGetRequest req = new TbkShopGetRequest();
+		req.setFields("user_id,shop_title,shop_type,seller_nick,pict_url,shop_url");
+		req.setQ(q);
+		req.setSort(sort);
+		req.setIsTmall(false);
+		req.setStartCredit(start_credit);
+		req.setEndCredit(end_credit);
+		req.setStartCommissionRate(start_commission_rate);
+		req.setEndCommissionRate(end_commission_rate);
+		req.setStartTotalAction(start_total_action);
+		req.setEndTotalAction(end_total_action);
+		req.setStartAuctionCount(start_auction_count);
+		req.setEndAuctionCount(end_auction_count);
+		req.setPlatform(platform);
+		req.setPageNo(page_no);
+		req.setPageSize(page_size);
+		try {
+			TbkShopGetResponse rsp = client.execute(req);
+			rsp = client.execute(req);
+			return DataOutput.DataReturn(rsp.getBody());
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return DataOutput.DataReturn(e.toString());
