@@ -35,7 +35,7 @@
     <!--定义接口实现的后缀，通常用Impl-->
     <!--定义实体工厂的引用-->
     <!--定义事务管理器的引用-->
-   	<jpa:repositories base-package="com.oneding.taobaoke.repository"
+   	<jpa:repositories base-package="com.oned.taobao.repository"
    					  repository-impl-postfix="Impl" 
    					  entity-manager-factory-ref="entityManagerFactory" 
    					  transaction-manager-ref="transactionManager"/>
