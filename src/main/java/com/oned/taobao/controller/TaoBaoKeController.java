@@ -31,7 +31,7 @@ import com.taobao.api.response.TbkShopGetResponse;
 @RequestMapping(value = Url.taobaoke)
 public class TaoBaoKeController {
 	
-	final Long platform = 2L;
+	final Long platform = 1L;
 	final Long page_size = 20L;
 
 	/**
